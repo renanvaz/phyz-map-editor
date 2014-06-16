@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>Map Editor for HTML game Engine</title>
+
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.0/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Map Editor</a>
+            <div class="navbar-inner">
+                <ul class="nav navbar-nav">
+                    <li><a href="#">HTML Game Engine</a></li>
+                    <li><a href="#">Map Editor</a></li>
+                </ul>
+
+                <ul class="nav navbar-nav pull-right">
+                    <li>
+                        <a href="#">Load</a>
+                    </li>
+                    <li>
+                        <a href="#">Save</a>
+                    </li>
+                    <li>
+                        <a href="#">Export</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div id="panel-top" class="navbar navbar-default navbar-fixed-top">
+        <select id="select-layers"></select>
+        <div class="navbar-inner">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#panel-tile">Tile</a></li>
+                <li><a href="#panel-collision">Collision</a></li>
+                <li><a href="#panel-entities">Entities</a></li>
+            </ul>
+            <ul class="nav pull-right">
+                <li>
+                    <label class="checkbox nav-checkbox" title="Exibir grid">
+                        <input type="checkbox" id="ckb-grid" checked="checked" /> <i class="glyphicon glyphicon-th"></i>
+                    </label>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div id="panel" class="clearfix">
+        <div id="panel-tile"></div>
+        <div id="panel-collision">
+            <legend>Solid shapes</legend>
+            <div class="collide" data-body="static" data-shape="box"></div>
+
+            <div style="clear: both;"></div>
+            <legend style="margin-top: 30px;">Plataform shapes</legend>
+            <div class="collide" data-body="static" data-shape="box" data-plataform="true"></div>
+        </div>
+        <div id="panel-entities">This panel is empty</div>
+    </div>
+    <div id="wrap-map">
+        <div id="map">
+            <div class="grid disable-mouse"></div>
+            <div class="hit disable-mouse"></div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal-init" class="modal fade" data-backdrop="static">
+        <div class="modal-dialog">
+            <form class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Init Map Editor</h4>
+                </div>
+                <div class="modal-body">
+                        <div class="form-group">
+                            <legend>Select tile file</legend>
+                            <input type="file" name="tile-file" required="required">
+                        </div>
+                        <div class="form-group">
+                            <label>Tile width (in pixel)</label>
+                            <input type="number" class="form-control" placeholder="Ex: 80" name="tile-width" required="required">
+                        </div>
+                        <div class="form-group">
+                            <label>Tile height (in pixel)</label>
+                            <input type="number" class="form-control" placeholder="Ex: 80" name="tile-height" required="required">
+                        </div>
+                        <div class="form-group">
+                            <legend>Stage size</legend>
+                            <label>Number of tiles in X axis</label>
+                            <input type="number" class="form-control" placeholder="Ex: 10" name="tile-x" required="required">
+                        </div>
+                        <div class="form-group">
+                            <label>Number of tiles in Y axis</label>
+                            <input type="number" class="form-control" placeholder="Ex: 10" name="tile-y" required="required">
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Start creation!</button>
+                </div>
+            </form><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <div id="modal-export" class="modal fade">
+        <div class="modal-dialog">
+            <form class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Export Map</h4>
+                </div>
+                <div class="modal-body">
+                        <p>Copy and paste the code below in your project, inside of Stage.</p>
+                        <textarea style="margin: 0px 0px 10px; width: 516px; height: 200px;"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn" data-dismiss="modal" aria-hidden="true">Ok</button>
+                </div>
+            </form><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+    <!-- SCRIPTs -->
+    <script src="js/jquery-2.1.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/MapEditor.js"></script>
+    <script type="text/javascript">
+        var Map;
+        $(document).ready(function(){
+            $('#modal-init').modal('show');
+
+            $('#modal-init form').on('submit', function(){
+                Map = new MapEditor(
+                    $('[name="tile-width"]', this).val(),
+                    $('[name="tile-height"]', this).val(),
+                    $('[name="tile-x"]', this).val(),
+                    $('[name="tile-y"]', this).val()
+                );
+                Map.add('img/tiles/' + $('[name="tile-file"]', this).val().split('\\').pop());
+
+                $('#modal-init').modal('hide');
+                return false;
+            });
+
+            $('#btn-export').on('click', function(){
+                Map.export();
+            });
+        });
+    </script>
+</body>
+</html>

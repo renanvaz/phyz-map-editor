@@ -49,20 +49,20 @@ var MapEditor = (function(){
             }
         }).trigger('change');
 
-        $('#panel').on('click', '.body', function(){
+        $('#panel .panel-content').on('click', '.body', function(){
             $('.selected').removeClass('selected');
             $(this).addClass('selected');
             _this.$selected = $(this);
         });
 
-        $('#panel-top li a').on('click', function(){
-            $('#panel-top li a').parent().removeClass('active');
+        $('#panel .panel-top li a').on('click', function(){
+            $('#panel .panel-top li a').parent().removeClass('active');
             $(this).parent().addClass('active');
 
-            $('#panel > [id^=panel]').hide();
+            $('#panel .panel-content > [id^=panel]').hide();
             $($(this).attr('href')).show();
 
-            if($(this).attr('href') == '#panel-collision')
+            if($(this).attr('href') == '#panel .panel-content-collision')
                 $('body').addClass('panel-collision');
             else
                 $('body').removeClass('panel-collision');
@@ -144,11 +144,11 @@ var MapEditor = (function(){
             }
         });
 
-        $('#panel .collide').css({width: w, height: h}).on('click', function(e) {
+        $('#panel .panel-content .collide').css({width: w, height: h}).on('click', function(e) {
 
         });
 
-        $('#panel-top li a:eq(0)').trigger('click');
+        $('#panel .panel-top li a:eq(0)').trigger('click');
     }
 
     MapEditor.prototype.add = function(tileFile) {
@@ -165,7 +165,7 @@ var MapEditor = (function(){
 
         function draw() {
             for(var i = _this.panelIndex; i < limit; i++){
-                $('#panel-tile').append('<div class="body" style="background: url('+tileFile+') no-repeat -'+(i%limitX * _this.width)+'px -'+(~~(i/limitX) * _this.height)+'px; width:'+_this.width+'px; height:'+_this.height+'px; float: left; margin: 1px;"></div>')
+                $('#panel .panel-content-tile .tiles').append('<div class="body" style="background: url('+tileFile+') no-repeat -'+(i%limitX * _this.width)+'px -'+(~~(i/limitX) * _this.height)+'px; width:'+_this.width+'px; height:'+_this.height+'px; float: left; margin: 1px;"></div>')
             }
             _this.panelIndex = i;
         }

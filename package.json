@@ -1,0 +1,34 @@
+{
+  "name": "map-editor",
+  "version": "1.0.0",
+  "description": "Map editor for Phyz engine",
+  "main": " ",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/renanvaz/phyz-map-editor.git"
+  },
+  "keywords": [
+    "map",
+    "editor",
+    "phyz",
+    "game",
+    "engine",
+    "mobile"
+  ],
+  "author": "Renan Vaz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/renanvaz/phyz-map-editor/issues"
+  },
+  "homepage": "https://github.com/renanvaz/phyz-map-editor",
+  "devDependencies": {
+    "gulp": "^3.8.0",
+    "gulp-concat": "^2.2.0",
+    "gulp-less": "^1.2.3",
+    "gulp-minify-css": "^0.3.4",
+    "gulp-uglify": "^0.3.0"
+  }
+}

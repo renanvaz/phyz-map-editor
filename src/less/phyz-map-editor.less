@@ -40,7 +40,7 @@ legend {
     bottom: 0;
     overflow: auto;
     border-left: 1px solid #999;
-    background: #fff;
+    background: #FFF; /*#444*/
     z-index: 2;
 
     #map {
@@ -91,8 +91,10 @@ legend {
     .panel-content {
         width: 100%;
         padding: 10px;
-        position: relative;
+        position: absolute;
         overflow-y: auto;
+        bottom: 0;
+        top: 51px;
 
         > [id^="panel-"]{
             display: none;
@@ -102,22 +104,39 @@ legend {
             outline: 3px solid rgba(255, 255, 255, .5);
             opacity: .8;
 
-            .tile {
-                z-index: 1;
-                position: relative;
+            .form-group {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+            }
 
-                &:hover {
-                    opacity: .8;
-                    cursor: pointer;
-                    outline: 3px solid rgba(255, 255, 255, .5);
-                    margin: 0;
-                }
+            .tiles {
+                position: absolute;
+                top: 51px;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                overflow-y: auto;
+                padding: 10px;
 
-                &.selected {
-                    opacity: .7;
-                    outline: 3px solid red;
-                    margin: 0;
-                    z-index: 2;
+                .tile {
+                    z-index: 1;
+                    position: relative;
+
+                    &:hover {
+                        opacity: .8;
+                        cursor: pointer;
+                        outline: 3px solid rgba(255, 255, 255, .5);
+                        margin: 0;
+                    }
+
+                    &.selected {
+                        opacity: .7;
+                        outline: 3px solid red;
+                        margin: 0;
+                        z-index: 2;
+                    }
                 }
             }
         }
@@ -126,14 +145,15 @@ legend {
             float: left;
             margin: 1px;
             cursor: pointer;
-            background: rgba(0, 0, 0, .5);
+            background: rgba(255, 0, 0, .5);
 
             &[data-plataform="true"] {
-                background: rgba(0, 153, 255, 0.5);
+                background: rgba(255, 150, 0, 0.5);
             }
         }
     }
 }
+
 
 .form-group {
     label {
@@ -148,9 +168,9 @@ legend {
         margin-top: -20px;
         padding-top: 25px;
         height: auto;
+    }
 
-        &select {
-            padding-left: 8px;
-        }
+    select.form-control {
+        padding-left: 8px;
     }
 }

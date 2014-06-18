@@ -136,11 +136,11 @@
     <script type="text/javascript">
         var Map;
 
-        Map = new MapEditor(80, 80, 10, 10);
-        Map.add('media/img/tiles/' + 'Tile.png');
+        $(document).ready(function(){
+            Map = new MapEditor(80, 80, 10, 10);
+            Map.add('media/img/tiles/' + 'Tile.png');
 
-        /*$(document).ready(function(){
-            $('#modal-init').modal('show');
+            /*$('#modal-init').modal('show');
 
             $('#modal-init form').on('submit', function(){
                 Map = new MapEditor(
@@ -157,8 +157,8 @@
 
             $('#btn-export').on('click', function(){
                 Map.export();
-            });
-        });*/
+            });*/
+        });
     </script>
 </body>
 </html>

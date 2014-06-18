@@ -33,23 +33,19 @@ var MapEditor = (function(){
         }
 
         $('#ckb-grid').on('change', function(){
-            if($(this).is(':checked')){
+            if ($(this).is(':checked')) {
                 $('#map .grid').addClass('grid-show');
-            }else{
+            } else {
                 $('#map .grid').removeClass('grid-show');
             }
         }).trigger('change');
 
 
         $('#select-layers').on('change', function(){
-            if($(this).is(':checked')){
-                $('#map .grid').addClass('grid-show');
-            }else{
-                $('#map .grid').removeClass('grid-show');
-            }
+
         }).trigger('change');
 
-        $('#panel .panel-content').on('click', '.body', function(){
+        $('#panel .panel-content').on('click', '.tile', function(){
             $('.selected').removeClass('selected');
             $(this).addClass('selected');
             _this.$selected = $(this);
@@ -165,7 +161,7 @@ var MapEditor = (function(){
 
         function draw() {
             for(var i = _this.panelIndex; i < limit; i++){
-                $('#panel .panel-content-tile .tiles').append('<div class="body" style="background: url('+tileFile+') no-repeat -'+(i%limitX * _this.width)+'px -'+(~~(i/limitX) * _this.height)+'px; width:'+_this.width+'px; height:'+_this.height+'px; float: left; margin: 1px;"></div>')
+                $('#panel-tile .tiles').append('<div class="tile" style="background: url('+tileFile+') no-repeat -'+(i%limitX * _this.width)+'px -'+(~~(i/limitX) * _this.height)+'px; width:'+_this.width+'px; height:'+_this.height+'px; float: left; margin: 1px;"></div>')
             }
             _this.panelIndex = i;
         }

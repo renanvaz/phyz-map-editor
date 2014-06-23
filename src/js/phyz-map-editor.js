@@ -36,6 +36,7 @@ var MapEditor = (function() {
                     selected: 'tiles',
                     tiles: {
                         selectedLayer: '',
+                        selectedTile: 0,
                     },
                     collisions: {},
                     entities: {}
@@ -65,6 +66,9 @@ var MapEditor = (function() {
             methods: {
                 selectPanel: function(e) {
                     this.panels.selected = e.target.dataset.panel;
+                },
+                selectTile: function(e) {
+                    this.panels.tiles.selectedTile = Number(e.target.dataset.index);
                 }
             }
         };

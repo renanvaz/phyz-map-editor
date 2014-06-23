@@ -125,7 +125,7 @@ legend {
                 top: 0;
                 left: 0;
                 right: 0;
-                bottom: 60%;
+                bottom: 70%;
                 overflow-y: auto;
                 border-bottom: 1px solid #999;
 
@@ -178,28 +178,31 @@ legend {
 
             .div-tiles {
                 position: absolute;
-                top: 40%;
+                top: 30%;
                 bottom: 0;
                 left: 0;
                 right: 0;
                 overflow-y: auto;
 
-                .tile {
-                    z-index: 1;
-                    position: relative;
-                    float: left;
-                    margin: 1px;
+                .tiles {
+                    padding: 10px;
 
-                    &:hover {
-                        opacity: .8;
-                        cursor: pointer;
-                    }
+                    .tile {
+                        z-index: 1;
+                        position: relative;
+                        float: left;
+                        margin: 1px;
 
-                    &.selected {
-                        opacity: .9;
-                        outline: 2px solid red;
-                        margin: 0;
-                        z-index: 2;
+                        &:hover {
+                            opacity: .8;
+                            cursor: pointer;
+                        }
+
+                        &.selected {
+                            opacity: .9;
+                            outline: 2px solid red;
+                            z-index: 2;
+                        }
                     }
                 }
             }

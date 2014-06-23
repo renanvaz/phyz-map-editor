@@ -61,7 +61,7 @@
                     <div class="div-tiles">
                         <fieldset>Tiles</fieldset>
                         <div class="tiles">
-                            <div v-repeat="tiles.data" class="tile tile-{{$index}}"></div>
+                            <div v-repeat="tiles.data" class="tile tile-{{$index}} {{panels.tiles.selectedTile === $index ? 'selected' : ''}}" data-index="{{$index}}" v-on="click: selectTile"></div>
                         </div>
                     </div>
                 </div>

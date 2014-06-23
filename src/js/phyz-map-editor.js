@@ -1,49 +1,116 @@
-var MapEditor = (function(){
-    function MapEditor(w, h, x, y, layers){
-        layers = layers || ['Background', 'Ground', 'Foreground'];
+Vue.filter('toURL', function(string) {
+    var w;
+    var map = {
+        a: /[\xE0-\xE6]/g,
+        e: /[\xE8-\xEB]/g,
+        i: /[\xEC-\xEF]/g,
+        o: /[\xF2-\xF6]/g,
+        u: /[\xF9-\xFC]/g,
+        c: /\xE7/g,
+        n: /\xF1/g
+    };
 
-        var _this               = this,
-            i;
-        this.$selected          = null;
-        this.limit              = x * y;
-        this.width              = w;
-        this.height             = h;
-        this.limitX             = x;
-        this.limitY             = y;
-        this.panelIndex         = 0;
-        this.mousedown          = false;
-        this.deleteMousedown    = false;
+    for (w in map) {
+        string = string.replace(map[w], w);
+    }
 
-        $('#map').css({
-            height: h * y,
-            width: w * x
-        });
+    return string.replace(/ /g, '-').toLowerCase();
+});
 
-        $('#wrap-map').scrollTop(h * y);
+Vue.directive('draw-tiles', function(value) {
 
-        for(i = 0; i < layers.length; i++){
-            $('#map').append('<div data-layer="'+layers[i]+'"></div>');
-            $('#select-layers').append('<option value="'+layers[i]+'">'+layers[i]+'</option>');
-        }
+});
 
-        for(i = 0; i < this.limit; i++){
-            $('#map > div').each(function(){
-                $(this).append('<div class="tile" style="width:'+_this.width+'px; height:'+_this.height+'px; position: absolute; top:'+(~~(i/_this.limitX) * _this.height)+'px; left:'+(i%_this.limitX * _this.width)+'px;"></div>')
+var MapEditor = (function() {
+    function MapEditor(w, h, x, y, layers) {
+        var _this, layer, i, len;
+
+        _this   = this;
+        layer   = 'Default';
+        len     = x * y;
+
+        var vmConfig = {
+            el: '#map-editor',
+            data: {
+                panels: {
+                    selected: 'tiles',
+                    tiles: {
+                        selectedLayer: '',
+                    },
+                    collisions: {},
+                    entities: {}
+                },
+                tiles: {
+                    width: w,
+                    height: h,
+                    limitX: x,
+                    limitY: y,
+                    src: '',
+                    data: []
+                },
+                stage: {
+                    grid: {
+                        visible: true,
+                        tiles: []
+                    },
+                    collisions: {
+                        visible: true,
+                        tiles: []
+                    },
+                    layers: [],
+                    mousedown: false,
+                    mode: 'draw'
+                }
+            },
+            methods: {
+                selectPanel: function(e) {
+                    this.panels.selected = e.target.dataset.panel;
+                }
+            }
+        };
+
+        for (i = 0; i < len; i++) {
+            vmConfig.data.stage.grid.tiles.push({
+                x: (i % vmConfig.data.tiles.limitX) * vmConfig.data.tiles.width,
+                y: ~~(i / vmConfig.data.tiles.limitX) * vmConfig.data.tiles.height,
+                width: vmConfig.data.tiles.width,
+                height: vmConfig.data.tiles.height,
+            });
+
+            vmConfig.data.stage.collisions.tiles.push({
+                x: (i % vmConfig.data.tiles.limitX) * vmConfig.data.tiles.width,
+                y: ~~(i / vmConfig.data.tiles.limitX) * vmConfig.data.tiles.height,
+                width: vmConfig.data.tiles.width,
+                height: vmConfig.data.tiles.height,
+                value: false
             });
         }
 
-        $('#ckb-grid').on('change', function(){
-            if ($(this).is(':checked')) {
-                $('#map .grid').addClass('grid-show');
-            } else {
-                $('#map .grid').removeClass('grid-show');
+        this.$listLayers = $('#list-layers').sortable({
+            axis: 'y',
+            distance: 5,
+            start: function(e, ui) {
+                ui.item.data('start', ui.item.index());
+            },
+            update: function(e, ui) {
+                var start = ui.item.data('start'),
+                    end = ui.item.index();
+
+                _this.vm.stage.layers.splice(end, 0, _this.vm.stage.layers.splice(start, 1)[0]);
             }
-        }).trigger('change');
+        });
+
+        this.vm = new Vue(vmConfig);
+
+        this.addLayer(layer);
+        this.addLayer('Test 1');
+        this.addLayer('Test 2');
+        this.addLayer('Test 3');
 
 
-        $('#select-layers').on('change', function(){
+        //$('#wrap-map').scrollTop(h * y);
 
-        }).trigger('change');
+        /*
 
         $('#panel .panel-content').on('click', '.tile', function(){
             $('.selected').removeClass('selected');
@@ -51,34 +118,16 @@ var MapEditor = (function(){
             _this.$selected = $(this);
         });
 
-        $('#panel .panel-top li a').on('click', function(){
-            $('#panel .panel-top li a').parent().removeClass('active');
-            $(this).parent().addClass('active');
-
-            $('#panel .panel-content > [id^=panel]').hide();
-            $($(this).attr('href')).show();
-
-            if($(this).attr('href') == '#panel .panel-content-collision')
-                $('body').addClass('panel-collision');
-            else
-                $('body').removeClass('panel-collision');
-
-            $('.selected').removeClass('selected');
-            _this.$selected = null;
-
-            return false;
-        });
-
         $('#map').on('mouseover', '.tile', function() {
             $(this).attr('data-bg', $(this).css('background'));
 
             if (_this.$selected) {
-                $(this).css({background: _this.$selected.css('background'), opacity: .8});
+                $(this).css({background: _this.$selected.css('background')});
             }
         });
 
         $('#map').on('mouseout', '.tile', function() {
-            $(this).css({background: $(this).attr('data-bg') || '', opacity: 1});
+            $(this).css({background: $(this).attr('data-bg') || ''});
         });
 
         $('#map').on('mousemove', '.tile', function() {
@@ -139,57 +188,66 @@ var MapEditor = (function(){
                 _this.deleteMousedown = false;
             }
         });
-
-        $('#panel .panel-content .collide').css({width: w, height: h}).on('click', function(e) {
-
-        });
-
-        $('#panel .panel-top li a:eq(0)').trigger('click');
+        */
     }
 
-    MapEditor.prototype.add = function(tileFile) {
-        var img = new Image();
-        var limitX = 0, limitY = 0, limit = 0, _this = this;
-        img.onload = function() {
-            limitX = this.width / _this.width;
-            limitY = this.height / _this.height;
-            limit += limitX * limitY;
+    MapEditor.prototype.addLayer = function(layerTitle) {
+        var len = this.vm.tiles.limitX * this.vm.tiles.limitY;
+        var i;
 
-            draw();
+        var layer = {
+            title: layerTitle,
+            visible: true,
+            tiles: []
+        };
+
+        for (i = 0; i < len; i++) {
+            layer.tiles.push({
+                x: (i % this.vm.tiles.limitX) * this.vm.tiles.width,
+                y: ~~(i / this.vm.tiles.limitX) * this.vm.tiles.height,
+                width: this.vm.tiles.width,
+                height: this.vm.tiles.height,
+                value: false
+            });
         }
-        img.src = tileFile;
 
-        function draw() {
-            for(var i = _this.panelIndex; i < limit; i++){
-                $('#panel-tile .tiles').append('<div class="tile" style="background: url('+tileFile+') no-repeat -'+(i%limitX * _this.width)+'px -'+(~~(i/limitX) * _this.height)+'px; width:'+_this.width+'px; height:'+_this.height+'px; float: left; margin: 1px;"></div>')
+        this.vm.stage.layers.push(layer);
+
+        if (!this.vm.panels.tiles.selectedLayer) {
+            this.vm.panels.tiles.selectedLayer = layerTitle;
+        }
+
+        this.$listLayers.sortable('refresh');
+    }
+
+    MapEditor.prototype.addTile = function(tileFile) {
+        var _this = this,
+            _img = new Image(),
+            limitX = 0,
+            limitY = 0,
+            limit = 0;
+
+        _img.onload = function() {
+            _this.vm.tiles.src = tileFile;
+
+            var limitX  = ~~(this.width / _this.vm.tiles.width);
+            var limitY  = ~~(this.height / _this.vm.tiles.height);
+            var len     = limitX * limitY;
+            var i;
+
+            for (i = 0; i < len; i++) {
+                _this.vm.tiles.data.push({
+                    x: (i % limitX) * _this.vm.tiles.width,
+                    y: ~~(i / limitX) * _this.vm.tiles.height
+                });
             }
-            _this.panelIndex = i;
         }
+
+        _img.src = tileFile;
     }
 
     MapEditor.prototype.export = function() {
-        var $map = $('#map').clone();
-        $map.find('.tile').each(function() {
-                var data = $(this).attr('data-has-bg');
-                if (!data || data == 'false') {
-                    $(this).remove();
-                }
-            })
-            .removeAttr('class')
-            .removeAttr('data-bg')
-            .removeAttr('data-has-bg');
 
-        $map.find('.collide').each(function() {
-                 $('> *', this).remove();
-            })
-            .removeAttr('class')
-            .removeAttr('data-body-initialized');
-
-        $('#modal-export textarea').val($map.html());
-
-        $('#modal-export').modal();
-
-        return $map.html();
     }
 
     return MapEditor;

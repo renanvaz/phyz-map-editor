@@ -2,143 +2,170 @@
 <html lang="en-US">
 <head>
     <meta charset="UTF-8">
-    <title>Map Editor for HTML game Engine</title>
+    <title>Map Editor for HTML Game Engine</title>
 
     <link rel="stylesheet" href="media/vendor/css/bootstrap.min.css">
+    <link rel="stylesheet" href="media/vendor/css/jquery-ui-1.10.4.custom.min.css">
     <link rel="stylesheet" href="media/css/phyz-map-editor.min.css">
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Map Editor</a>
-            <div class="navbar-inner">
-                <ul class="nav navbar-nav">
-                    <li><a href="#">HTML Game Engine</a></li>
-                    <li><a href="#">Map Editor</a></li>
-                </ul>
+    <div id="map-editor">
+        <div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Map Editor</a>
+                <div class="navbar-inner">
+                    <ul class="nav navbar-nav">
+                        <li><a href="#">HTML Game Engine</a></li>
+                        <li><a href="#">Map Editor</a></li>
+                    </ul>
 
-                <ul class="nav navbar-nav pull-right">
-                    <li>
-                        <a href="#">Load</a>
-                    </li>
-                    <li>
-                        <a href="#">Save</a>
-                    </li>
-                    <li>
-                        <a href="#">Export</a>
-                    </li>
-                </ul>
+                    <ul class="nav navbar-nav pull-right">
+                        <li>
+                            <a href="#">Load</a>
+                        </li>
+                        <li>
+                            <a href="#">Save</a>
+                        </li>
+                        <li>
+                            <a href="#">Export</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    <aside id="panel">
-        <div class="panel-top navbar navbar-default navbar-fixed-top">
-            <div class="navbar-inner">
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="#panel-tile">Tile</a></li>
-                    <li><a href="#panel-collision">Collision</a></li>
-                    <li><a href="#panel-entities">Entities</a></li>
-                </ul>
-                <ul class="nav pull-right">
-                    <li>
-                        <label class="checkbox nav-checkbox" title="Exibir grid">
-                            <input type="checkbox" id="ckb-grid" checked="checked" /> <i class="glyphicon glyphicon-th"></i>
-                        </label>
-                    </li>
-                </ul>
+        <aside id="panel">
+            <div class="panel-top navbar navbar-default navbar-fixed-top">
+                <div class="navbar-inner">
+                    <ul class="nav navbar-nav">
+                        <li class="{{panels.selected === 'tiles' ? 'active' : ''}}"><a href="#" data-panel="tiles" v-on="click: selectPanel">Tile</a></li>
+                        <li class="{{panels.selected === 'collisions' ? 'active' : ''}}"><a href="#" data-panel="collisions" v-on="click: selectPanel">Collision</a></li>
+                        <li class="{{panels.selected === 'entities' ? 'active' : ''}}"><a href="#" data-panel="entities" v-on="click: selectPanel">Entities</a></li>
+                    </ul>
+                    <ul class="nav pull-right">
+                        <li>
+                            <label class="checkbox nav-checkbox" title="Exibir grid">
+                                <input type="checkbox" id="ckb-grid" checked="checked" v-model="stage.grid" /> <i class="glyphicon glyphicon-th"></i>
+                            </label>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="panel-content clearfix">
+                <div id="panel-tiles" v-show="panels.selected === 'tiles'">
+                    <div class="div-layers">
+                        <fieldset>Layers</fieldset>
+                        <ul id="list-layers">
+                            <li v-repeat="stage.layers" class="{{panels.tiles.selectedLayer === title ? 'active' : ''}}"><label><input type="radio" name="layer" value="{{title}}" v-model="panels.tiles.selectedLayer"> {{title}}</label> <a href="#" class="glyphicon {{visible ? 'glyphicon-eye-open' : 'glyphicon-eye-close'}}" v-on="click: visible = !visible"></a></li>
+                        </ul>
+                    </div>
+                    <div class="div-tiles">
+                        <fieldset>Tiles</fieldset>
+                        <div class="tiles">
+                            <div v-repeat="tiles.data" class="tile tile-{{$index}}"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="panel-collisions" v-show="panels.selected === 'collisions'">
+                    <legend>Solid shapes</legend>
+                    <div class="collide" data-body="static" data-shape="box"></div>
+
+                    <div style="clear: both;"></div>
+                    <legend style="margin-top: 30px;">Plataform shapes</legend>
+                    <div class="collide" data-body="static" data-shape="box" data-plataform="true"></div>
+                </div>
+                <div id="panel-entities" v-show="panels.selected === 'entities'">This panel is empty</div>
+            </div>
+        </aside>
+
+        <div id="wrap-map">
+            <div id="map" v-style="width: stage.tiles.width + 'px', height: stage.tiles.height + 'px'">
+                <div class="grid disable-mouse {{stage.grid.visible ? 'show' : ''}}">
+                    <div class="tile" v-repeat="stage.grid.tiles" v-style="position: 'absolute', width: width + 'px', height: height + 'px', top: y + 'px', left: x + 'px'"></div>
+                </div>
+                <div class="hit disable-mouse">
+                    <div class="tile" v-repeat="stage.collisions.tiles" v-style="position: 'absolute', width: width + 'px', height: height + 'px', top: y + 'px', left: x + 'px'"></div>
+                </div>
+                <div v-repeat="stage.layers" id="{{title | toURL}}" class="{{panels.tiles.selectedLayer === title ? '' : 'disable-mouse'}}" v-show="visible">
+                    <div class="tile" v-repeat="tiles" v-style="position: 'absolute', width: width + 'px', height: height + 'px', top: y + 'px', left: x + 'px'"></div>
+                </div>
             </div>
         </div>
-        <div class="panel-content clearfix">
-            <div id="panel-tile">
-                <div class="form-group">
-                    <label>Layer</label>
-                    <select id="select-layers" class="form-control"></select>
-                </div>
-                <div class="tiles"></div>
-            </div>
-            <div id="panel-collision">
-                <legend>Solid shapes</legend>
-                <div class="collide" data-body="static" data-shape="box"></div>
 
-                <div style="clear: both;"></div>
-                <legend style="margin-top: 30px;">Plataform shapes</legend>
-                <div class="collide" data-body="static" data-shape="box" data-plataform="true"></div>
-            </div>
-            <div id="panel-entities">This panel is empty</div>
-        </div>
-    </aside>
-    <div id="wrap-map">
-        <div id="map">
-            <div class="grid disable-mouse"></div>
-            <div class="hit disable-mouse"></div>
-        </div>
-    </div>
+        <!-- MODAL -->
+        <div id="modal-init" class="modal fade" data-backdrop="static">
+            <div class="modal-dialog">
+                <form class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Init Map Editor</h4>
+                    </div>
+                    <div class="modal-body">
+                            <div class="form-group">
+                                <legend>Select tile file</legend>
+                                <input type="file" name="tile-file" required="required">
+                            </div>
+                            <div class="form-group">
+                                <label>Tile width (in pixel)</label>
+                                <input type="number" class="form-control" placeholder="Ex: 80" name="tile-width" required="required">
+                            </div>
+                            <div class="form-group">
+                                <label>Tile height (in pixel)</label>
+                                <input type="number" class="form-control" placeholder="Ex: 80" name="tile-height" required="required">
+                            </div>
+                            <div class="form-group">
+                                <legend>Stage size</legend>
+                                <label>Number of tiles in X axis</label>
+                                <input type="number" class="form-control" placeholder="Ex: 10" name="tile-x" required="required">
+                            </div>
+                            <div class="form-group">
+                                <label>Number of tiles in Y axis</label>
+                                <input type="number" class="form-control" placeholder="Ex: 10" name="tile-y" required="required">
+                            </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Start creation!</button>
+                    </div>
+                </form><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
 
-    <!-- MODAL -->
-    <div id="modal-init" class="modal fade" data-backdrop="static">
-        <div class="modal-dialog">
-            <form class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Init Map Editor</h4>
-                </div>
-                <div class="modal-body">
-                        <div class="form-group">
-                            <legend>Select tile file</legend>
-                            <input type="file" name="tile-file" required="required">
-                        </div>
-                        <div class="form-group">
-                            <label>Tile width (in pixel)</label>
-                            <input type="number" class="form-control" placeholder="Ex: 80" name="tile-width" required="required">
-                        </div>
-                        <div class="form-group">
-                            <label>Tile height (in pixel)</label>
-                            <input type="number" class="form-control" placeholder="Ex: 80" name="tile-height" required="required">
-                        </div>
-                        <div class="form-group">
-                            <legend>Stage size</legend>
-                            <label>Number of tiles in X axis</label>
-                            <input type="number" class="form-control" placeholder="Ex: 10" name="tile-x" required="required">
-                        </div>
-                        <div class="form-group">
-                            <label>Number of tiles in Y axis</label>
-                            <input type="number" class="form-control" placeholder="Ex: 10" name="tile-y" required="required">
-                        </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Start creation!</button>
-                </div>
-            </form><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
-
-    <div id="modal-export" class="modal fade">
-        <div class="modal-dialog">
-            <form class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Export Map</h4>
-                </div>
-                <div class="modal-body">
+        <div id="modal-export" class="modal fade">
+            <div class="modal-dialog">
+                <form class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Export Map</h4>
+                    </div>
+                    <div class="modal-body">
                         <p>Copy and paste the code below in your project, inside of Stage.</p>
                         <textarea style="margin: 0px 0px 10px; width: 516px; height: 200px;"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn" data-dismiss="modal" aria-hidden="true">Ok</button>
-                </div>
-            </form><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn" data-dismiss="modal" aria-hidden="true">Ok</button>
+                    </div>
+                </form><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+        </div><!-- /.modal -->
+
+        <style type="text/css">
+            {{'.tile { width: '+(tiles.width)+'px; height: '+(tiles.height)+'px;}'}}
+        </style>
+        <style type="text/css" v-repeat="tiles.data">
+            {{'.tile-'+$index+' { background: url('+tiles.src+') no-repeat '+(-x)+'px '+(-y)+'px;}'}}
+        </style>
+    </div>
 
     <!-- SCRIPTs -->
     <script src="media/vendor/js/jquery-2.1.1.min.js"></script>
+    <script src="media/vendor/js/jquery-ui-1.10.4.custom.min.js"></script>
     <script src="media/vendor/js/bootstrap.min.js"></script>
+    <script src="media/vendor/js/vue.min.js"></script>
     <script src="media/js/phyz-map-editor.min.js"></script>
     <script type="text/javascript">
         var Map;
 
         $(document).ready(function(){
             Map = new MapEditor(80, 80, 10, 10);
-            Map.add('media/img/tiles/' + 'Tile.png');
+            Map.addTile('media/img/tiles/' + 'Tile.png');
 
             /*$('#modal-init').modal('show');
 

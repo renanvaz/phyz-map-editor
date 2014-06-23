@@ -86,7 +86,7 @@
                     <div class="tile" v-repeat="stage.collisions.tiles" v-style="position: 'absolute', width: width + 'px', height: height + 'px', top: y + 'px', left: x + 'px'"></div>
                 </div>
                 <div v-repeat="stage.layers" id="{{title | toURL}}" class="{{panels.tiles.selectedLayer === title ? '' : 'disable-mouse'}}" v-show="visible">
-                    <div class="tile" v-repeat="tiles" v-style="position: 'absolute', width: width + 'px', height: height + 'px', top: y + 'px', left: x + 'px'"></div>
+                    <div class="tile" v-repeat="tiles" v-style="position: 'absolute', top: y + 'px', left: x + 'px'" v-on="mouseover: mouseOverTile, mouseout: mouseOutTile, mousedown: mouseDownTile, mousemove: mouseMoveTile"></div>
                 </div>
             </div>
         </div>

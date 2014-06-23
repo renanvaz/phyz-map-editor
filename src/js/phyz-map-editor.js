@@ -69,7 +69,22 @@ var MapEditor = (function() {
                 },
                 selectTile: function(e) {
                     this.panels.tiles.selectedTile = Number(e.target.dataset.index);
-                }
+                },
+                mouseOverTile: function(e) {
+                    e.preventDefault();
+                    e.target.classList.add('tile-'+this.panels.tiles.selectedTile);
+                },
+                mouseOutTile: function(e) {
+                    e.preventDefault();
+                    e.target.classList.remove('tile-'+this.panels.tiles.selectedTile);
+                },
+                mouseDownTile: function(e) {
+                    e.preventDefault();
+                    e.target.classList.add('tile-'+this.panels.tiles.selectedTile);
+                },
+                mouseMoveTile: function(e) {
+                    e.preventDefault();
+                },
             }
         };
 
@@ -209,8 +224,6 @@ var MapEditor = (function() {
             layer.tiles.push({
                 x: (i % this.vm.tiles.limitX) * this.vm.tiles.width,
                 y: ~~(i / this.vm.tiles.limitX) * this.vm.tiles.height,
-                width: this.vm.tiles.width,
-                height: this.vm.tiles.height,
                 value: false
             });
         }

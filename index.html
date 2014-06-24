@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="media/css/phyz-map-editor.min.css">
 </head>
 <body>
-    <div id="map-editor">
+    <div id="map-editor" v-on="mouseup: mouseUpTile">
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">Map Editor</a>
@@ -86,7 +86,7 @@
                     <div class="tile" v-repeat="stage.collisions.tiles" v-style="position: 'absolute', width: width + 'px', height: height + 'px', top: y + 'px', left: x + 'px'"></div>
                 </div>
                 <div v-repeat="stage.layers" id="{{title | toURL}}" class="{{panels.tiles.selectedLayer === title ? '' : 'disable-mouse'}}" v-show="visible">
-                    <div class="tile" v-repeat="tiles" v-style="position: 'absolute', top: y + 'px', left: x + 'px'" v-on="mouseover: mouseOverTile, mouseout: mouseOutTile, mousedown: mouseDownTile, mousemove: mouseMoveTile"></div>
+                    <div  v-repeat="tiles" v-style="position: 'absolute', top: y + 'px', left: x + 'px'" v-on="mouseover: mouseOverTile, mouseout: mouseOutTile, mousedown: mouseDownTile, mousemove: mouseMoveTile" class="tile {{value !== false ? 'tile-'+value : ''}}"></div>
                 </div>
             </div>
         </div>
@@ -151,6 +151,7 @@
         </style>
         <style type="text/css" v-repeat="tiles.data">
             {{'.tile-'+$index+' { background: url('+tiles.src+') no-repeat '+(-x)+'px '+(-y)+'px;}'}}
+            {{'.tile-hover-'+$index+' { background: url('+tiles.src+') no-repeat '+(-x)+'px '+(-y)+'px !important;}'}}
         </style>
     </div>
 

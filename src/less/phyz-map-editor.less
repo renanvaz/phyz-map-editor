@@ -63,10 +63,6 @@ legend {
 
             &.show .tile {
                 box-shadow: -1px -1px 0 rgba(74, 255, 255, .6);
-
-                &.hover {
-                    opacity: .8;
-                }
             }
         }
 
@@ -74,6 +70,11 @@ legend {
             z-index: 9998;
         }
     }
+
+}
+
+.tile:hover, .hover {
+    opacity: .8 !important;
 }
 
 #panel {
@@ -194,12 +195,10 @@ legend {
                         margin: 1px;
 
                         &:hover {
-                            opacity: .8;
                             cursor: pointer;
                         }
 
                         &.selected {
-                            opacity: .9;
                             outline: 2px solid red;
                             z-index: 2;
                         }

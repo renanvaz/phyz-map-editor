@@ -72,15 +72,35 @@ var MapEditor = (function() {
                 },
                 mouseOverTile: function(e) {
                     e.preventDefault();
-                    e.target.classList.add('tile-'+this.panels.tiles.selectedTile);
+
+                    e.target.classList.add('hover');
+
+                    if (this.stage.mousedown) {
+                        this.mouseDownTile(e);
+                    } else {
+                        e.target.classList.add('tile-hover-'+this.panels.tiles.selectedTile);
+                    }
                 },
                 mouseOutTile: function(e) {
                     e.preventDefault();
-                    e.target.classList.remove('tile-'+this.panels.tiles.selectedTile);
+
+                    e.target.classList.remove('tile-hover-'+this.panels.tiles.selectedTile);
+                    e.target.classList.remove('hover');
                 },
                 mouseDownTile: function(e) {
                     e.preventDefault();
-                    e.target.classList.add('tile-'+this.panels.tiles.selectedTile);
+
+                    this.stage.mousedown = true;
+
+                    if (e.which === 2) {
+                        this.stage.layers[$(e.target).parent().index() - 2].tiles[$(e.target).index()].value = false;
+                    } else {
+                        this.stage.layers[$(e.target).parent().index() - 2].tiles[$(e.target).index()].value = this.panels.tiles.selectedTile;
+                    }
+                },
+                mouseUpTile: function(e) {
+                    e.preventDefault();
+                    this.stage.mousedown = false;
                 },
                 mouseMoveTile: function(e) {
                     e.preventDefault();
@@ -125,89 +145,6 @@ var MapEditor = (function() {
         this.addLayer('Test 1');
         this.addLayer('Test 2');
         this.addLayer('Test 3');
-
-
-        //$('#wrap-map').scrollTop(h * y);
-
-        /*
-
-        $('#panel .panel-content').on('click', '.tile', function(){
-            $('.selected').removeClass('selected');
-            $(this).addClass('selected');
-            _this.$selected = $(this);
-        });
-
-        $('#map').on('mouseover', '.tile', function() {
-            $(this).attr('data-bg', $(this).css('background'));
-
-            if (_this.$selected) {
-                $(this).css({background: _this.$selected.css('background')});
-            }
-        });
-
-        $('#map').on('mouseout', '.tile', function() {
-            $(this).css({background: $(this).attr('data-bg') || ''});
-        });
-
-        $('#map').on('mousemove', '.tile', function() {
-            if(_this.$selected){
-                if(_this.mousedown){
-                    $(this).css({background: _this.$selected.css('background')});
-                    $(this).attr('data-bg', _this.$selected.css('background'));
-                    $(this).attr('data-has-bg', 'true');
-                }
-            }
-
-            if(_this.deleteMousedown){
-                $(this).css({background: ''});
-                $(this).attr('data-bg', '');
-                $(this).attr('data-has-bg', 'false');
-            }
-        });
-
-        $('#map').on('mousedown', '.tile', function(e) {
-            e.preventDefault();
-
-            if (_this.$selected) {
-                if (e.which == 2) {
-                    $(this).css({background: ''});
-                    $(this).attr('data-bg', '');
-                    $(this).attr('data-has-bg', 'false');
-                } else {
-                    $(this).css({background: _this.$selected.css('background')});
-                    $(this).attr('data-bg', _this.$selected.css('background'));
-                    $(this).attr('data-has-bg', 'true');
-                }
-            }
-        });
-
-        $('#map').on('.collide', 'mousedown',  function(e) {
-            e.preventDefault();
-
-            if (e.which == 2) {
-                $(this).remove();
-            }
-        });
-
-        $(document).on('mousedown', function(e) {
-            if ($(e.target).is('.tile')) {
-                e.preventDefault();
-
-                if (e.which == 1) {
-                    _this.mousedown = true;
-                } else if (e.which == 2) {
-                    _this.deleteMousedown = true;
-                }
-            }
-        }).on('mouseup', function(e){
-            e.preventDefault();
-            if (e.which == 1){
-                _this.mousedown = false;
-            } else if (e.which == 2) {
-                _this.deleteMousedown = false;
-            }
-        });
-        */
     }
 
     MapEditor.prototype.addLayer = function(layerTitle) {
